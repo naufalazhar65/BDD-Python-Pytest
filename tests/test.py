@@ -24,7 +24,7 @@ def browser():
 
 # ============  Login Page =============
 
-# scenarios('login.feature')
+scenarios('login.feature')
 
 @given('the user is on the login page')
 def login_page(browser):
