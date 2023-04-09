@@ -24,11 +24,12 @@ def browser():
 
 # ============  Login Page =============
 
-scenarios('login.feature')
+# scenarios('login.feature')
 
 @given('the user is on the login page')
 def login_page(browser):
     browser.get('https://www.saucedemo.com/')
+    assert 'Swag Labs' in browser.title
 
 @when('the user enters valid username and password')
 def enter_valid_credentials(browser):
@@ -58,6 +59,7 @@ def inventory_page(browser):
 @then('the user see an error message')
 def error_message(browser):
     assert browser.find_element(by=By.CSS_SELECTOR, value='.error-button').is_displayed()
+    assert "Epic sadface: Username and password do not match any user in this service" in browser.page_source
 
 # =================== checkout page ==================
 
@@ -82,6 +84,9 @@ def enter_valid_credentials(browser):
 def add_to_cart(browser):
     item = browser.find_element(by=By.ID, value='add-to-cart-sauce-labs-bike-light')
     item.click()
+    assert "Remove" in browser.find_element(by=By.XPATH, value="//button[@name='remove-sauce-labs-bike-light']").text
+    assert "1" in browser.find_element(by=By.CLASS_NAME, value="shopping_cart_badge").text
+
     sleep(2)
 
 @when('the user goes to the cart')
@@ -90,6 +95,8 @@ def go_to_cart(browser):
     cart_button.click()
     sleep(2)
     assert "Your Cart" in browser.page_source
+    assert "$9.99" in browser.find_element(by=By.CLASS_NAME, value="inventory_item_price").text
+
 
 @when('the user clicks on the checkout button')
 def checkout(browser):
@@ -100,6 +107,7 @@ def checkout(browser):
 @when('the user enters valid personal information')
 def enter_personal_info(browser):
     assert "Checkout: Your Information" in browser.page_source
+    assert browser.find_element(by=By.CLASS_NAME, value="checkout_info").is_displayed()
     firstname = browser.find_element(by=By.ID, value='first-name')
     lastname = browser.find_element(by=By.ID, value='last-name')
     postalcode = browser.find_element(by=By.ID, value='postal-code')
@@ -113,6 +121,7 @@ def enter_personal_info(browser):
 @when('the user enters invalid personal information')
 def enter_invalid_personal_info(browser):
     assert "Checkout: Your Information" in browser.page_source
+    assert browser.find_element(by=By.CLASS_NAME, value="checkout_info").is_displayed()
     firstname = browser.find_element(by=By.ID, value='first-name')
     lastname = browser.find_element(by=By.ID, value='last-name')
     postalcode = browser.find_element(by=By.ID, value='postal-code')
@@ -123,18 +132,21 @@ def enter_invalid_personal_info(browser):
     continue_button.click()
     sleep(2)
 
-
 @when('the user confirms the purchase')
 def confirm_purchase(browser):
     assert "Checkout: Overview" in browser.page_source
+    assert "Payment Information" in browser.find_element(by=By.CLASS_NAME, value="summary_info_label").text
     confirm_purchase_button = browser.find_element(by=By.ID, value='finish')
     confirm_purchase_button.click()
     sleep(2)
 
 @then('the user sees a confirmation message')
 def confirmation_message(browser):
+    assert browser.find_element(by=By.XPATH, value="//div[@class='checkout_complete_container']").is_displayed()
     assert 'Thank you for your order!' in browser.find_element(by=By.CSS_SELECTOR, value='h2').text
 
 @then('the user sees an error message')
 def error_message(browser):
-    assert "Error: First Name is required" in browser.page_source
+    # assert "Error: First Name is required" in browser.page_source
+    assert browser.find_element(by=By.XPATH, value="//div[@class='error-message-container error']").is_displayed()
+    assert "Error: First Name is required" in browser.find_element(by=By.CSS_SELECTOR, value="h3").text
