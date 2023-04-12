@@ -6,18 +6,18 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 from pytest_bdd import given, when, then, scenarios
 
-options = Options()
-options = webdriver.ChromeOptions()
-options.add_argument('--ignore-certificate-errors')
-options.add_argument('--ignoare-ssl-errors')
-options.add_argument('--headless')
-options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
 @pytest.fixture
 def browser():
-    driver = webdriver.Chrome("/Users/naufalazhar/Documents/ChromeDriver/chromedriver")
+    options = Options()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_argument('--headless')
+
+    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
-    driver.implicitly_wait(15)
+    driver.implicitly_wait(10)
     yield driver
     driver.quit()
 
@@ -60,6 +60,74 @@ def inventory_page(browser):
 def error_message(browser):
     assert browser.find_element(by=By.CSS_SELECTOR, value='.error-button').is_displayed()
     assert "Epic sadface: Username and password do not match any user in this service" in browser.page_source
+
+# =================== product sort functionality ==================
+
+scenarios('product_sort.feature')
+
+@given('the user is on the inventory page')
+def login_page(browser):
+    browser.get('https://www.saucedemo.com/')
+    username = browser.find_element(by=By.ID, value='user-name')
+    password = browser.find_element(by=By.ID, value='password')
+    login_button = browser.find_element(by=By.ID, value='login-button')
+    username.send_keys("standard_user")
+    password.send_keys("secret_sauce")
+    login_button.click()
+    sleep(2)
+    assert "Products" in browser.page_source and "Swag Labs" in browser.page_source
+
+@when('the user selects Name A to Z option from the product sort')
+def select_a_z(browser):
+    sort_button = browser.find_element(by=By.CLASS_NAME, value='product_sort_container')
+    sort_button.click()
+    sort_name = browser.find_element(by=By.XPATH, value="//option[@value='az']")
+    sort_name.click()
+
+@when('the user selects Name Z to A option from the product sort')
+def select_z_a(browser):
+    sort_button = browser.find_element(by=By.CLASS_NAME, value='product_sort_container')
+    sort_button.click()
+    sort_name = browser.find_element(by=By.XPATH, value="//option[@value='za']")
+    sort_name.click()
+
+@when('the user selects Price low to high option from the product sort')
+def select_lo_hi(browser):
+    sort_button = browser.find_element(by=By.CLASS_NAME, value='product_sort_container')
+    sort_button.click()
+    sort_name = browser.find_element(by=By.XPATH, value="//option[@value='lohi']")
+    sort_name.click()
+
+@when('the user selects Price high to low option from the product sort')
+def select_hi_lo(browser):
+    sort_button = browser.find_element(by=By.CLASS_NAME, value='product_sort_container')
+    sort_button.click()
+    sort_name = browser.find_element(by=By.XPATH, value="//option[@value='hilo']")
+    sort_name.click()
+
+@then('the products are sorted alphabetically from A to Z')
+def verify_a_z(browser):
+    product_names = browser.find_elements(by=By.CLASS_NAME, value='inventory_item_name')
+    assert product_names[0].text == 'Sauce Labs Backpack'
+    assert product_names[-1].text == 'Test.allTheThings() T-Shirt (Red)'
+
+@then('the products are sorted alphabetically from Z to A')
+def verify_z_a(browser):
+    product_names = browser.find_elements(by=By.CLASS_NAME, value='inventory_item_name')
+    assert product_names[0].text == 'Test.allTheThings() T-Shirt (Red)'
+    assert product_names[-1].text == 'Sauce Labs Backpack'
+
+@then('the products are sorted by price from low to high')
+def verify_lo_hi(browser):
+    product_names = browser.find_elements(by=By.CLASS_NAME, value='inventory_item_name')
+    assert product_names[0].text == 'Sauce Labs Onesie'
+    assert product_names[-1].text == 'Sauce Labs Fleece Jacket'
+
+@then('the products are sorted by price from high to low')
+def verify_hi_lo(browser):
+    product_names = browser.find_elements(by=By.CLASS_NAME, value='inventory_item_name')
+    assert product_names[0].text == 'Sauce Labs Fleece Jacket'
+    assert product_names[-1].text == 'Sauce Labs Onesie'
 
 # =================== checkout page ==================
 
