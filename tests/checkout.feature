@@ -1,4 +1,4 @@
-Feature: Checkout
+Feature: Checkout Functionality
 
   Scenario: Successful checkout
     Given the user is on the login page
