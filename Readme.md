@@ -3,4 +3,4 @@
 #RUN
 - pytest -p no:warnings -s -v ./tests/test.py
 
-<img width="939" alt="Screenshot 2023-04-12 at 17 04 38" src="test.png">
+<img width="939" alt="Screenshot 2023-04-12 at 17 04 38" src="./assets/test.png">
