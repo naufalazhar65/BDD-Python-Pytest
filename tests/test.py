@@ -136,6 +136,7 @@ scenarios('checkout.feature')
 @given('the user is on the login page')
 def login_page(browser):
     browser.get('https://www.saucedemo.com/')
+    assert 'Swag Labs' in browser.title
 
 @when('User logs in with correct credentials')
 def enter_valid_credentials(browser):
@@ -154,7 +155,6 @@ def add_to_cart(browser):
     item.click()
     assert "Remove" in browser.find_element(by=By.XPATH, value="//button[@name='remove-sauce-labs-bike-light']").text
     assert "1" in browser.find_element(by=By.CLASS_NAME, value="shopping_cart_badge").text
-
     sleep(2)
 
 @when('the user goes to the cart')
