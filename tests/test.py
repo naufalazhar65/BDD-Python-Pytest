@@ -3,8 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from pytest_bdd import given, when, then, scenarios
 
@@ -16,12 +14,11 @@ def browser():
     options.add_argument('--ignore-ssl-errors')
     options.add_argument('--headless')
     
-    service = Service("/Users/naufalazhar/Documents/ChromeDriver/chromedriver")
-    driver = webdriver.Chrome(service=service, options=options)
-    driver.maximize_window()
-    driver.implicitly_wait(15)
-    yield driver
-    driver.quit()
+    browser = webdriver.Chrome(options=options)
+    browser.maximize_window()
+    browser.implicitly_wait(15)
+    yield browser
+    browser.quit()
 
 
 # ============  Login Page =============
