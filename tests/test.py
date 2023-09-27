@@ -1,8 +1,11 @@
 import pytest
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from pytest_bdd import given, when, then, scenarios
 
@@ -13,8 +16,7 @@ def browser():
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--ignore-ssl-errors')
     options.add_argument('--headless')
-    
-    browser = webdriver.Chrome(options=options)
+    browser = webdriver.Chrome(options, service=ChromeService(ChromeDriverManager().install()))
     browser.maximize_window()
     browser.implicitly_wait(15)
     yield browser
